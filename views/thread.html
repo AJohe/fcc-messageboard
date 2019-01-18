@@ -26,8 +26,8 @@
       $(function() {
         var currentURL = window.location.pathname.slice(3);
         currentURL = currentURL.split('/');
-        
-        var url = "/api/replies/"+currentURL[0];
+        var url = "/api/replies/"+currentURL[0] + '?thread_id=' + currentURL[1];
+       
         $('#threadTitle').text(window.location.pathname);
         $.ajax({
           type: "GET",
@@ -40,25 +40,26 @@
             // THIS ARRAY SET UP IS FOR CODE READABILITIES AND TESTING!
             // THIS IS NOT WHAT IT WOULD LOOK LIKE TO GO LIVE
             //
-              console.log(ele);//can I use typeScript please?!
+              //console.log(ele);//can I use typeScript please?!
               var thread = ['<div class="thread">'];
               thread.push('<div class="main">')
               thread.push('<p class="id">id: '+ele._id+' ('+ele.created_on+')</p>');
               thread.push('<form id="reportThread"><input type="hidden" name="report_id" value="'+ele._id+'"><input type="submit" value="Report"></form>');
-              thread.push('<form id="deleteThread"><input type="hidden" value="'+ele._id+'" name="thread_id" required=""><input type="text" placeholder="password" name="delete_password" required=""><input type="submit" value="Delete"></form>');
-              thread.push('<h3>'+ele.text+'</h3>');
+              thread.push('<form id="deleteThread"><input type="hidden" value="'+currentURL[1]+'" name="thread_id" required=""><input type="text" placeholder="password" name="delete_password" required=""><input type="submit" value="Delete"></form>');
+              thread.push('<h3>'+currentURL[0]+'</h3>');
               thread.push('</div><div class="replies">');
-              ele.replies.forEach(function(rep) {
+              ele.forEach(function(rep) {
+                //console.log(rep);
                 thread.push('<div class="reply">')
                 thread.push('<p class="id">id: '+rep._id+' ('+rep.created_on+')</p>');
                 thread.push('<form id="reportReply"><input type="hidden" name="thread_id" value="'+ele._id+'"><input type="hidden" name="reply_id" value="'+rep._id+'"><input type="submit" value="Report"></form>');
-                thread.push('<form id="deleteReply"><input type="hidden" value="'+ele._id+'" name="thread_id" required=""><input type="hidden" value="'+rep._id+'" name="reply_id" required=""><input type="text" placeholder="password" name="delete_password" required=""><input type="submit" value="Delete"></form>');
+                thread.push('<form id="deleteReply"><input type="hidden" value="'+rep.thread_id+'" name="thread_id" required=""><input type="hidden" value="'+rep._id+'" name="reply_id" required=""><input type="text" placeholder="password" name="delete_password" required=""><input type="submit" value="Delete"></form>');
                 thread.push('<p>'+rep.text+'</p>');
                 thread.push('</div>')
               });
               thread.push('<div class="newReply">')
               thread.push('<form action="/api/replies/'+currentURL[0]+'/" method="post" id="newReply">');
-              thread.push('<input type="hidden" name="thread_id" value="'+ele._id+'">');
+              thread.push('<input type="hidden" name="thread_id" value="'+ele[0].thread_id+'">');
               thread.push('<textarea rows="5" cols="80" type="text" placeholder="Quick reply..." name="text" required=""></textarea><br>');
               thread.push('<input type="text" placeholder="password to delete" name="delete_password" required=""><input style="margin-left: 5px" type="submit" value="Submit">')
               thread.push('</form></div></div></div>')
